@@ -1,4 +1,4 @@
-name: Pre commit checks (devops)
+name: Pre commit checks (java)
 
 on:
   workflow_call:
@@ -14,7 +14,10 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: "3.9"
-      - uses: hashicorp/setup-terraform@v2
+      - uses: actions/setup-java@v3
+        with:
+          distribution: "zulu"
+          java-version: "11"
 
       - name: Run pre-commit checks on delta changes
         id: pre-commit-delta
