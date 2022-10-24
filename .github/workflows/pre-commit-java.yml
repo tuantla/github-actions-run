@@ -1,4 +1,4 @@
-name: Pre commit checks (java)
+name: Sanitization checks (java)
 
 on:
   workflow_call:
@@ -6,7 +6,7 @@ on:
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
-    name: sanitize
+    name: pre-commit
     steps:
       - uses: actions/checkout@v3
         with:
@@ -52,6 +52,55 @@ jobs:
             const output = `#### Pre commit checks 📖 \`${{ steps.pre-commit-delta.outcome }}\`
 
             <a href="`+list.data.jobs[0].html_url+`#step:`+precommitstep+`">Link to Precommit check run output</a>
+
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+            if (review === undefined) {
+              github.rest.pulls.createReview({
+                ...pr,
+                body: output,
+                event: "COMMENT",
+              });
+            } else {
+              github.rest.pulls.updateReview({
+                ...pr,
+                body: output,
+                review_id: review.id
+              });
+            }
+  conventional-pr-title:
+    name: convential pr title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5
+        id: lint-pr-title
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: add-pr-title-comment
+        id: comment
+        uses: actions/github-script@v6
+        if: ${{ github.event_name == 'pull_request' && always() }}
+        with:
+          script: |
+            const pr = {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            };
+            const {data: reviews} = await github.rest.pulls.listReviews(pr);
+            let review = reviews.find(review => {
+              return (
+                (review?.user?.login ?? '') == 'github-actions[bot]' &&
+                (review?.body ?? '').startsWith('#### PR title checks')
+              )
+            });
+            const output = `#### PR title checks 📖 \`${{ steps.lint-pr-title.outcome }}\`
+
+            <details>
+              <summary>PR title should follow Conventional Commits</summary>
+              ${{ steps.lint-pr-title.outputs.error_message }}
+            </details>
 
             *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
 
