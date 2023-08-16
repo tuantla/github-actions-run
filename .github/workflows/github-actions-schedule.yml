@@ -18,7 +18,6 @@ jobs:
         key-path: '["services"]'
   run:
     needs: readyaml
-    runs-on: ubuntu-latest
     continue-on-error: true
     strategy:
       fail-fast: false
