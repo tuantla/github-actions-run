@@ -25,15 +25,13 @@ jobs:
       matrix:
         value: ${{fromJson(needs.readyaml.outputs.matrix)}}
 
-    steps:
-    - uses: ./.github/workflows/github-actions-adb-sync.yml
-      name: "Sync Code ${{matrix.value}}"
-      with:
-        repo: "${{matrix.value}}"
-        externalGitDomains: github.acsdigital.dev/adb
-        internalOwner: 101digital
-        internalBranch: adb/develop
-        externalBranch: develop
-      secrets:
-        sshKey: ${{ secrets.INTERNAL_SSH_KEY}}
-        externalGitToken: ${{ secrets.EXTERNAL_GIT_TOKEN}}
+    uses: ./.github/workflows/github-actions-adb-sync.yml
+    with:
+      repo: "${{matrix.value}}"
+      externalGitDomains: github.acsdigital.dev/adb
+      internalOwner: 101digital
+      internalBranch: adb/develop
+      externalBranch: develop
+    secrets:
+      sshKey: ${{ secrets.INTERNAL_SSH_KEY}}
+      externalGitToken: ${{ secrets.EXTERNAL_GIT_TOKEN}}
