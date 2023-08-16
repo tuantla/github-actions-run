@@ -1,0 +1,37 @@
+name: GitHub Actions Sync ADB Code
+on:
+  schedule:
+    - cron: '0 0 * * *'
+    - cron: '*/10 * * * *'
+jobs:
+  readyaml:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{steps.readyaml.outputs.data}}
+    steps:
+    - uses: actions/checkout@v3
+    - uses: jbutcher5/read-yaml@main
+      id: readyaml
+      with:
+        file: ${{ github.workspace }}/.github/adb-services.yml
+        key-path: '["services"]'
+  run:
+    needs: readyaml
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        value: ${{fromJson(needs.readyaml.outputs.matrix)}}
+
+    uses: ./.github/workflows/github-actions-adb-sync.yml
+    name: "Sync Code ${{matrix.value}}"
+    with:
+      repo: "${{matrix.value}}"
+      externalGitDomains: github.acsdigital.dev/adb
+      internalOwner: 101digital
+      internalBranch: adb/develop
+      externalBranch: develop
+    secrets:
+      sshKey: ${{ secrets.INTERNAL_SSH_KEY}}
+      externalGitToken: ${{ secrets.EXTERNAL_GIT_TOKEN}}

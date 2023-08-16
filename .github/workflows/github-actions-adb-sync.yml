@@ -1,0 +1,57 @@
+name: Code Sync
+on:
+  workflow_call:
+    inputs:
+      repo:
+        required: true
+        type: string
+      internalOwner:
+        required: true
+        type: string
+      externalGitDomains:
+        required: true
+        type: string
+      internalBranch:
+        required: true
+        type: string
+      externalBranch:
+        required: true
+        type: string
+
+
+    secrets:
+      sshKey:
+        required: true
+      externalGitToken:
+        required: true
+
+jobs:
+  sync:
+    outputs:
+      merge: ${{ steps.merge.outputs.result }}
+    runs-on: ubuntu-latest
+    steps:
+    - run: "echo sync git repos:${{ inputs.repo }}"
+    - uses: LuisEnMarroquin/setup-ssh-action@v2.0.0
+      with:
+        ORIGIN: github.com
+        SSHKEY: ${{ secrets.sshKey }}
+    - uses: actions/checkout@v3
+    - run: git config --global user.email "automation@101digital.io"
+    - run: git config --global user.name "Github Actions"
+    - shell: bash
+      run: >
+        git config --global init.defaultBranch develop &&
+        git remote add external https://${{ secrets.externalGitToken }}@${{ inputs.externalGitDomains }}/${{inputs.repo}}.git &&
+        git fetch external ${{ inputs.externalBranch }} &&
+        git remote add internal git@github.com:${{ inputs.internalOwner }}/${{ inputs.repo}}.git &&
+        git fetch internal ${{ inputs.internalBranch }} &&
+        git checkout -b working-branch internal/${{ inputs.internalBranch }}
+    - run: echo "::set-output name=result::$(git merge external/${{ inputs.externalBranch }} --allow-unrelated-histories --no-edit)"
+      id: merge
+    - name: check merge status
+      run: echo "::error::Code is not in sync ${{ inputs.repo}}" && exit 1
+      if: steps.merge.outputs.result != 'Already up to date.'
+
+
+  #  - run: git push internal working-branch:develop

@@ -1,0 +1,5 @@
+services:
+- interbank-payment-service
+- payment-service
+- account-opening-service
+- scheduled-payment-service
