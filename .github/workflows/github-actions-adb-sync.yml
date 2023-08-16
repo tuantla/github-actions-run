@@ -47,11 +47,11 @@ jobs:
         git remote add internal git@github.com:${{ inputs.internalOwner }}/${{ inputs.repo}}.git
         git fetch internal ${{ inputs.internalBranch }}
         git checkout -b working-branch internal/${{ inputs.internalBranch }}
-    - run: |
-        echo "result<<EOF" >> $GITHUB_OUTPUT
+    - id: merge
+      run: |
+        echo 'result<<EOF' >> $GITHUB_OUTPUT
         git merge external/${{ inputs.externalBranch }} --allow-unrelated-histories --no-edit >> $GITHUB_OUTPUT
         echo 'EOF' >> $GITHUB_OUTPUT
-      id: merge
     - name: check merge status
       run: |
         echo "::group:: Bellow changes are not sync"
