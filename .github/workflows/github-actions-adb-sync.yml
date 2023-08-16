@@ -47,7 +47,7 @@ jobs:
         git remote add internal git@github.com:${{ inputs.internalOwner }}/${{ inputs.repo}}.git &&
         git fetch internal ${{ inputs.internalBranch }} &&
         git checkout -b working-branch internal/${{ inputs.internalBranch }}
-    - run: echo "::set-output name=result::$(git merge external/${{ inputs.externalBranch }} --allow-unrelated-histories --no-edit)"
+    - run: echo 'result=\"$(git merge external/${{ inputs.externalBranch }} --allow-unrelated-histories --no-edit | head -n 1)'  >> $GITHUB_OUTPUT
       id: merge
     - name: check merge status
       run: echo "::error::Code is not in sync ${{ inputs.repo}}" && exit 1
