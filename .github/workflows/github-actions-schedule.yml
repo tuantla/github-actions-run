@@ -19,9 +19,10 @@ jobs:
   run:
     needs: readyaml
     runs-on: ubuntu-latest
+    continue-on-error: true
     strategy:
       fail-fast: false
-      max-parallel: 10
+      max-parallel: 1
       matrix:
         value: ${{fromJson(needs.readyaml.outputs.matrix)}}
 
