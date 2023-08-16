@@ -54,7 +54,9 @@ jobs:
       id: merge
     - name: check merge status
       run: |
-        echo "::warning:: ${{ steps.merge.outputs.result }}"
+        echo "::group:: Bellow changes are not sync"
+        echo "${{ steps.merge.outputs.result }}"
+        echo "::endgroup::"
         echo "::error::Code is not in sync ${{ inputs.repo}}" && exit 1
       if: steps.merge.outputs.result != 'Already up to date.'
 
