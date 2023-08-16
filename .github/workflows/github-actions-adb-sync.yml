@@ -54,7 +54,7 @@ jobs:
       id: merge
     - name: check merge status
       run: |
-        echo ${{ steps.merge.outputs.result }}
+        echo "::warning:: ${{ steps.merge.outputs.result }}"
         echo "::error::Code is not in sync ${{ inputs.repo}}" && exit 1
       if: steps.merge.outputs.result != 'Already up to date.'
 
