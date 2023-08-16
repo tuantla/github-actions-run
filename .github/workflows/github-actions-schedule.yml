@@ -25,7 +25,7 @@ jobs:
       matrix:
         value: ${{fromJson(needs.readyaml.outputs.matrix)}}
 
-    uses: 101digital/gh-actions/.github/workflows/github-actions-adb-sync.yml@master
+    uses: ./.github/workflows/github-actions-adb-sync.yml
     # secrets:
     #   sshKey: ${{ secrets.INTERNAL_SSH_KEY}}
     #   externalGitToken: ${{ secrets.EXTERNAL_GIT_TOKEN}}
