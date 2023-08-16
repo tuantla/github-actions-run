@@ -50,7 +50,7 @@ jobs:
     - run: echo "::set-output name=result::$(git merge external/${{ inputs.externalBranch }} --allow-unrelated-histories --no-edit)"
       id: merge
     - name: check merge status
-      run: echo "::error::Code is not in sync ${{ inputs.repo}}"
+      run: echo "::error::Code is not in sync ${{ inputs.repo}}" && exit 1
       if: steps.merge.outputs.result != 'Already up to date.'
 
 
