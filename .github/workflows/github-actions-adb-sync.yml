@@ -17,13 +17,13 @@ on:
       externalBranch:
         required: true
         type: string
-
-
-    secrets:
-      sshKey:
-        required: true
-      externalGitToken:
-        required: true
+    #
+    #
+    # secrets:
+    #   sshKey:
+    #     required: true
+    #   externalGitToken:
+    #     required: true
 
 jobs:
   sync:
@@ -35,14 +35,14 @@ jobs:
     - uses: LuisEnMarroquin/setup-ssh-action@v2.0.0
       with:
         ORIGIN: github.com
-        SSHKEY: ${{ secrets.sshKey }}
+        SSHKEY: ${{ secrets.INTERNAL_SSH_KEY }}
     - uses: actions/checkout@v3
     - run: git config --global user.email "automation@101digital.io"
     - run: git config --global user.name "Github Actions"
     - shell: bash
       run: >
         git config --global init.defaultBranch develop &&
-        git remote add external https://${{ secrets.externalGitToken }}@${{ inputs.externalGitDomains }}/${{inputs.repo}}.git &&
+        git remote add external https://${{ secrets.EXTERNAL_GIT_TOKEN }}@${{ inputs.externalGitDomains }}/${{inputs.repo}}.git &&
         git fetch external ${{ inputs.externalBranch }} &&
         git remote add internal git@github.com:${{ inputs.internalOwner }}/${{ inputs.repo}}.git &&
         git fetch internal ${{ inputs.internalBranch }} &&

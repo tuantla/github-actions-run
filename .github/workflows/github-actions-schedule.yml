@@ -27,12 +27,13 @@ jobs:
         value: ${{fromJson(needs.readyaml.outputs.matrix)}}
 
     uses: ./.github/workflows/github-actions-adb-sync.yml
-    secrets:
-      sshKey: ${{ secrets.INTERNAL_SSH_KEY}}
-      externalGitToken: ${{ secrets.EXTERNAL_GIT_TOKEN}}
+    # secrets:
+    #   sshKey: ${{ secrets.INTERNAL_SSH_KEY}}
+    #   externalGitToken: ${{ secrets.EXTERNAL_GIT_TOKEN}}
     with:
       repo: "${{matrix.value}}"
       externalGitDomains: github.acsdigital.dev/adb
       internalOwner: 101digital
       internalBranch: adb/develop
       externalBranch: develop
+    secrets: inherit  
