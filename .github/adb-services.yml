@@ -1,5 +1,6 @@
 services:
+- marketplace-utils
 - interbank-payment-service
-- payment-service
-- account-opening-service
-- scheduled-payment-service
+# - payment-service
+# - account-opening-service
+# - scheduled-payment-service
